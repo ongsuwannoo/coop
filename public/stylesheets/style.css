@@ -33,6 +33,11 @@ body {
   color: white;
 }
 
+.sidebar a.select {
+  background-color: #fff49d;
+  color: black;
+}
+
 div.content {
   margin-left: 200px;
   padding: 30px 16px;

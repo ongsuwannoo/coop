@@ -9,6 +9,7 @@ var usersRouter = require('./routes/users');
 var templatesRouter = require('./routes/templates.js');
 var supervisorRouter = require('./routes/supervisor.js');
 var job_applicationRouter = require('./routes/job_application.js');
+var coop_2 = require('./routes/coop_2.js');
 
 var app = express();
 
@@ -26,6 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/coop', templatesRouter);
 app.use('/coop/supervisor', supervisorRouter);
 app.use('/coop/job_application', job_applicationRouter);
+app.use('/coop/coop_2', coop_2);
 app.use('/users', usersRouter);
 // app.use('/templates', templatesRouter);
 

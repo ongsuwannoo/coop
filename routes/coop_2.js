@@ -5,23 +5,21 @@ const contentDisposition = require('content-disposition');
 
 const PizZip = require('pizzip');
 const Docxtemplater = require('docxtemplater');
-const path = require('path');
-var thday = new Array("อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัส", "ศุกร์", "เสาร์");
-var thmonth = new Array("มกราคม", "กุมภาพันธ์", "มีนาคม",
+
+const thmonth = new Array("มกราคม", "กุมภาพันธ์", "มีนาคม",
   "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน",
   "ตุลาคม", "พฤศจิกายน", "ธันวาคม");
-
+const now = new Date();
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  res.render('templates', { title: 'เอกสารสหกิจ' });
+  res.render('coop_2', { title: 'เอกสารสหกิจ' });
 });
 
 router.post('/send', async function (req, res, next) {
   console.log("send")
 
   let payload = req.body;
-  let outputName = payload.ReportName;
-  let now = new Date();
+  let outputName = "(coop 2) แบบแจ้งรายละเอียดงาน " + payload.company_name_thai;
 
   // The error object contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
   function replaceErrors(key, value) {
@@ -49,7 +47,7 @@ router.post('/send', async function (req, res, next) {
   }
 
   //Load the docx file as a binary
-  var content = fs.readFileSync('./public/file/simple.docx', 'binary');
+  var content = fs.readFileSync('./public/file/coop_2.docx', 'binary');
 
   var zip = new PizZip(content);
   var doc;
@@ -61,14 +59,9 @@ router.post('/send', async function (req, res, next) {
   }
 
   //set the templateVariables
-  doc.setData({
-    ReportName: payload.ReportName,
-    prefix: (payload.prefix == 'M' ? 'นาย' : 'นางสาว'),
-    firstname: payload.firstname,
-    lastname: payload.lastname,
-    studentId: payload.studentId,
-    date: now.getDate() + " " + thmonth[now.getMonth()] + " " + (now.getFullYear() + 543),
-  });
+  payload.date = now.getDate() + " " + thmonth[now.getMonth()] + " " + (now.getFullYear() + 543)
+
+  doc.setData(payload);
 
   try {
     // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
@@ -94,12 +87,12 @@ router.post('/send', async function (req, res, next) {
   res.setHeader('Content-disposition', contentDisposition(outputName + '.docx'));
   res.setHeader('Content-Length', stat.size);
   console.log("sending... ", outputName + ".docx")
-  file.pipe(res);
-  file.on('end', function() {
-    fs.unlink(fileName, function() {
+  file.on('end', function () {
+    fs.unlink(fileName, function () {
       console.log('File deleted ...');
     });
   });
+  file.pipe(res);
 })
 
 module.exports = router;
